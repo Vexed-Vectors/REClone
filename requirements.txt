@@ -3,3 +3,4 @@ djangorestframework
 pyaml
 requests
 django-cors-headers
+django-markdownx==2.0.28

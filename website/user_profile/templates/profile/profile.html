@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body>
+        <center><h4>{{ profile.name }}'s Profile</h4></center>
+        <div class="container-fluid" style="padding: 30px">     
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-12">
+            <div class="jumbotron container shadow-sm p-3 mb-1 bg-white rounded" style="background: white;">
+             {% if profile.image %}
+                 <center><img src="{{ profile.image.url }}" alt="Profile Picture" height="100px" width="100px" style="border-radius: 100px;"></center>
+             {% endif %}
+             <div style="text-align: center;">
+             <h3>{{ profile.name }}</h3>
+             <h5><small class="text-muted">@{{ profile.user }}</small></h5>
+             </div>
+             <hr>
+             <ul>
+<!--                  <li><i class="fas fa-envelope"></i>  {{ profile.user.email }}</li> -->
+                 <li><i class="fas fa-university"></i>  {{ profile.college }}</li>
+                 <li><i class="fab fa-leanpub"></i> {{ profile.dept }}</li>
+                 <li><i class="fas fa-clock"></i> {{ profile.created_at }}</li>
+                 <!-- <li><i class="fas fa-user-circle"></i>  Role {{ profile.role }}</li> -->
+             </ul>
+             {% if request.user.id == profile.id %}
+             <a href="{% url 'profile:edit_profile'%}" style="float:right;">Edit Profile</a>
+             {% endif %}
+            </div>
+            <br>
+            {% load static %}
+            <div class="jumbotron container shadow-sm p-3 mb-1 bg-white rounded" style="background: white;">
+                <div style="text-align: center;">
+                <h5>Handles :</h5>
+                </div>
+                <hr>
+                <center>
+                  {% if profile.url_CodeChef != NULL %}
+                    <a href="{{ profile.url_CodeChef }}" target="_blank" ><img src="{% static 'image/profile/codechef.png' %}" style="max-width:30px;" hspace=15 alt="logo"></a>
+                  {% endif %}
+                  {% if profile.url_Codeforces != NULL %}
+                    <a href="{{ profile.url_Codeforces }}" target="_blank" ><img src="{% static 'image/profile/codeforces.png' %}" style="max-width:30px;" hspace=15 alt="logo"></a>
+                  {% endif %}
+                  {% if profile.url_HackerRank != NULL %}
+                    <a href="{{ profile.url_HackerRank }}" target="_blank" ><img src="{% static 'image/profile/hackerrank.png' %}" style="max-width:30px;" hspace=15 alt="logo"></a>
+                  {% endif %}
+                  {% if profile.url_SPOJ != NULL %}
+                    <a href="{{ profile.url_SPOJ }}" target="_blank" ><img src="{% static 'image/profile/spoj.png' %}" style="max-width:30px;" hspace=15 alt="logo"></a>
+                  {% endif %}
+                </center>
+               </div>
+        <br>
+        <br>
+        {% if profile.user == request.user %}
+            <div class="jumbotron container shadow-sm p-3 mb-1 bg-white rounded" style="background: white;">
+            <div style="text-align: center;">
+            <h5>StopStalk :</h5>
+            </div>
+            <hr>
+            <center>
+            <form method="get" action={% url "profile:search_user" %}>
+            <div class="input-group justify-content-center align-content-center m-auto w-100">
+              <input type="search" name="query" class="form-control rounded m-sm-0" placeholder="Search User" aria-label="Search"
+                aria-describedby="search-addon" />
+                <br>
+              <button type="submit" class="btn btn-outline-primary" style="padding: 10px important;">Search</button>
+            </div>
+            </form>
+          </center>
+            </div>
+            <br>
+            <br>
+        {% endif %}
+
+      </div>
+            <div class="col-lg-9 col-md-8 col-sm-12">
+            <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded"  style="background: white">
+                <div class="card-header" style="background: white">
+                  Recent Activity
+                </div>
+             <div class="card-body">
+              <ul>
+                {% for act in activity %}
+                {% if act.get_cname == "Question" %}
+                <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded" style="background: white ;padding: 10px">
+                        <h5>Questions Asked</h5>
+                        <a href="{% url 'forum:detail_questions' act.id  %}">Asked this Question: {{ act.title }}</a><br>
+                </div>
+                {% elif act.get_cname == "Answer" %}
+                <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded" style="background: white ;padding: 10px">
+                        <h5>Questions Answered</h5>
+                        <a href="{% url 'forum:detail_questions' act.question_id.id  %}">Answered this Question: {{ act.question_id.title }}</a><br>
+                </div>
+                {% elif act.get_cname == "Comment" %}
+                <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded" style="background: white ;padding: 10px">
+                        <h5>Comments On Questions</h5>
+                        <a href="{% url 'forum:detail_questions' act.question.id  %}">Commented on this Question: {{ act.question.title }}</a><br>
+                </div>
+                   {% elif act.get_cname == "Comment_A" %}
+                   <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded" style="background: white ;padding: 10px">
+                           <h5>Comments On Answers</h5>
+                           <a href="{% url 'forum:detail_questions' act.answer.question_id.id  %}">Commented on this Answer: {{ act.answer.question_id.title }}</a>
+                   </div>
+                   {%endif%}
+               {%endfor%}
+             </ul>
+             <ul>
+               {% for act in activity %}
+               {% if act.get_cname == "Post" %}
+               <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded" style="background: white ;padding: 10px">
+                       <h5>Post Shared</h5>
+                       <a href="{% url 'blog:detail_blogs' act.id %}">Shared this Post on RECursion Blog: {{ act.title }}</a><br>
+               </div>
+               {% elif act.get_cname == "Reply" %}
+               <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded" style="background: white ;padding: 10px">
+                       <h5>Commented on Post</h5>
+                       <a href="{% url 'blog:detail_blogs' act.post_id.id  %}">Commented on this Post on RECursion Blog: {{ act.post_id.title }}</a><br>
+               </div>
+               {% elif act.get_cname == "Comment_Reply" %}
+               <div class="jumbotron shadow-sm p-3 mb-1 bg-white rounded" style="background: white ;padding: 10px">
+                       <h5>Replied to a Comment on Post</h5>
+                       <a href="{% url 'blog:detail_blogs' act.reply.post_id.id  %}">Replied to a Comment on this Post on RECursion Blog: {{ act.reply.post_id.title }}</a>
+               </div>
+               {% endif %}
+               <br>
+                {% endfor %}
+            </ul>
+            </div>
+            </div>
+            </div>
+         </div>
+         </div>
+
+</body>
+{% endblock %}

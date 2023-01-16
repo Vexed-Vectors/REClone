@@ -1,0 +1,109 @@
+  {% extends 'base.html' %}
+  {% block title%}Interview Experiences{% endblock %}
+  {% block interview_active %} active {% endblock %}
+  {% block js %}
+  <!-- Import Google Fonts-->
+  <!--     <link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,700" rel="stylesheet">
+
+  <!-- Import Google Font Montserrat -->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script>
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+
+    $(window).scroll(function() {
+      var margin = $(document).height() - $(window).height();
+      if ($(window).scrollTop() > margin && empty_page == false && block_request == false)
+        block_request = true;
+      page += 1;
+      $.get('?page=' + page, function(data) {
+        if (data == '') {
+          empty_page = true;
+        } else {
+          $('#experiences-list').append(data);
+        }
+      });
+    });
+  </script>
+  {% endblock js %}
+  {% load widget_tweaks %}
+  {% block content %}
+  <style>
+    .highlight_filter{
+      background-color: #6C757D;
+      color: white;
+    }
+  </style>
+  <div class="container">
+    <a href="{% url 'home' %}" class="text-muted small">< Back to Home</a> 
+    <h2 style="margin-top: 2%">Interview Experiences</h2>
+    <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
+    <p class="small" style="font-family: 'Pacifico', cursive;">Nothing ever becomes real'til it is experienced - John Keats</p>
+    <div class="row">
+      <div class="col-lg-9 col-sm-12 mt-2">
+        <div class="card ml-0">
+          <div class="block row card-header m-0">
+            <div class="col-sm-12 col-lg-6">
+              <div class="col-sm-0 col-md-2 col-lg-2">
+              </div>
+              <form method="POST">
+                <div class="mt-1 mb-1">
+                  {% csrf_token %}
+                  {% render_field form_search.key class="form-control mr-1" placeholder="Search" style="display:inline-block;min-width:150px; max-width:20vw;" %}  
+                  <!-- {{ form_search.as_table }} -->
+
+                  <button type="submit" class="save btn btn-sm btn-outline-primary" style="display: inline-block;"> <i class="fas fa-search"></i></button>
+                </div>
+              </form>
+            </div>
+            <div class="col-sm-0 col-md-2 col-lg-3">
+            </div>
+            <a class="btn" href="{% url 'experience:add_experience' %}" style="float:right">
+              <button type="button" class="btn btn-outline-primary btn-sm">
+                Post Experience&nbsp;&nbsp;<i class="far fa-edit"></i>
+              </button>
+            </a>
+            <!-- <strong>Filter</strong> -->
+            <div class="btn-group col-sm-12 col-md-6 col-lg-4" role="group" style="float: right;">
+              {% if 'All' in request.path or 'filter' not in request.path and 'search' not in request.path %}
+                <a class="btn btn-outline-secondary btn-sm mt-1 highlight_filter" href="{% url 'experience:filter_experience' 'All'  %}" style="text-decoration: none;">All</a>
+              {% else %}
+                <a class="btn btn-outline-secondary btn-sm mt-1 " href="{% url 'experience:filter_experience' 'All'  %}" style="text-decoration: none;">All</a>
+              {% endif %}
+              {% if 'Internship' in request.path and 'filter' in request.path %}
+                <a class="btn btn-outline-secondary btn-sm mt-1 highlight_filter" href="{% url 'experience:filter_experience' 'Internship'  %}" style="text-decoration: none;">Internship</a>
+              {% else %}
+                <a class="btn btn-outline-secondary btn-sm mt-1 " href="{% url 'experience:filter_experience' 'Internship'  %}" style="text-decoration: none;">Internship</a>
+              {% endif %}
+              {% if 'Full Time' in request.path and 'filter' in request.path %}
+                <a class="btn btn-outline-secondary btn-sm mt-1 highlight_filter" href="{% url 'experience:filter_experience' 'Full Time'  %}" style="text-decoration: none;">Full Time</a>
+              {% else %}
+                <a class="btn btn-outline-secondary btn-sm mt-1 " href="{% url 'experience:filter_experience' 'Full Time'  %}" style="text-decoration: none;">Full Time</a>
+              {% endif %}
+           </div>
+         </div>
+         <div id="experiences-list">
+           {% include 'exp_list.html' %}
+         </div>
+       </div>
+     </div>
+     <div class="col-sm-12 col-lg-3 mt-2">
+      <div class="ml-0">
+        <div class=" mr-auto">
+          <div class="card">
+              <div class="number card-header  p-0"><h2 style="text-align:center;">
+                <p class="ml-auto mr-auto mb-0 mt-2" style="font-family:'Rajdhani',sans-serif;">{{ ie_count }}</p></h2>
+              </div>
+              <div class="mt-2">
+                <p style="text-align: center;">Experiences shared</p></div>
+            </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    {% endblock %}
